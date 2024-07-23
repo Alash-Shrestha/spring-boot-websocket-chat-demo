@@ -1,21 +1,29 @@
-# Start with a base image containing Java runtime
+# Use an official Maven image to build the project
+FROM maven:3.8.4-openjdk-11 AS build
+
+# Set the working directory in the container
+WORKDIR /app
+
+# Copy the pom.xml and other necessary files to the container
+COPY pom.xml .
+
+# Copy the entire project to the container
+COPY src ./src
+
+# Package the application
+RUN mvn clean package -DskipTests
+
+# Use an official OpenJDK runtime as a base image
 FROM openjdk:8-jdk-alpine
 
-# Add Maintainer Info
-MAINTAINER Rajeev Kumar Singh <callicoder@gmail.com>
+# Set the working directory in the container
+WORKDIR /app
 
-# Add a volume pointing to /tmp
-VOLUME /tmp
+# Copy the packaged jar file from the build stage to the final image
+COPY --from=build /app/target/*.jar app.jar
 
-# Make port 8080 available to the world outside this container
+# Expose the port the application will run on
 EXPOSE 8080
 
-# The application's jar file
-ARG JAR_FILE=target/websocket-demo-0.0.1-SNAPSHOT.jar
-
-# Add the application's jar to the container
-ADD ${JAR_FILE} websocket-demo.jar
-
-# Run the jar file 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/websocket-demo.jar"]
-
+# Command to run the application
+CMD ["java", "-jar", "app.jar"]
