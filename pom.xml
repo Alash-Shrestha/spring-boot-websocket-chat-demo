@@ -64,7 +64,7 @@
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
-				<version>2.20.1</version>
+				<version>3.9.8</version>
 			</plugin>
 
 			<!-- This plugin is used to create a docker image and publish the image to docker hub-->
